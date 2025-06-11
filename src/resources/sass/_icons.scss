@@ -1,0 +1,61 @@
+//==============================================
+// ----------------------------------------
+// ICONS
+// ---------------------
+:root {
+    --icon-size: 1rem;
+}
+
+// affecs all icons
+i,
+.icon,
+i[class^="icon-"],
+i[class*=" icon-"] {
+    font-style: normal;
+    font-weight: normal !important;
+    font-variant: normal;
+    text-transform: none;
+    line-height: 1;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    font-size: var(--icon-size);
+    line-height: var(--icon-size);
+    position: relative;
+
+    &::before {
+        font-style: inherit;
+        font-weight: inherit;
+        font-variant: inherit;
+        text-transform: inherit;
+        line-height: inherit;
+        -webkit-font-smoothing: inherit;
+        -moz-osx-font-smoothing: inherit;
+        font-size: inherit;
+        line-height: inherit;
+        position: inherit;
+        color: inherit;
+    }
+}
+
+// affects only icons with class starting with "icon-" or "icon"
+.icon,
+i[class^="icon-"],
+i[class*=" icon-"] {
+    top: 1px;
+    &::before {
+        top: inherit;
+    }
+}
+
+.x-icon {
+    width: var(--icon-size);
+    height: var(--icon-size);
+    svg,
+    use,
+    symbol,
+    symbol > g {
+        width: inherit;
+        height: inherit;
+        fill: inherit;
+    }
+}

@@ -12,7 +12,7 @@ auth.json
 .env.*
 !.env.example
 .docker
-,console
+.console
 .gitcommands
 
 phpunit.xml
@@ -27,16 +27,7 @@ pint.json
 !.gitconfig
 !.gitattributes
 !.dockerignore
-!.global--gitconfig
-!.install
-!.installer__files
-!.installer__files/*
-!.installer__files/.*
-!.installer__files/**/*
-!.installer__files/**/.*
 !README.md
-!reset
-!test.sh
 
 # -----------------------------------------
 # Other

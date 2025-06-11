@@ -1,0 +1,56 @@
+@forward './icons';
+/*! purgecss start ignore */
+@unocss;
+/*! purgecss end ignore */
+//==============================================
+* {
+    font-family: 'Roboto', sans-serif;
+}
+html,
+body {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    background-color: #1c1b22;
+}
+
+.fx--app {
+    display: flex;
+    height: 100%;
+    width: 100%;
+}
+
+main {
+    flex: 1;
+    overflow: auto;
+    background-color: #1c1b22;
+    color: #fff;
+    padding: 20px;
+}
+
+.sidebar {
+    .logo {
+        color: #fff;
+        fill: #fff;
+    }
+    &__menu {
+        height: 100%;
+        padding: 10px 0;
+        li:not(:first-child) {
+            padding: 5px 10px;
+        }
+        li + li {
+            margin-top: 6px;
+        }
+        li:first-child {
+            margin-bottom: 50px;
+        }
+    }
+    &__action {
+        width: 80px;
+        height: 30px;
+        line-height: 30px;
+        text-align: center;
+        color: #fff;
+    }
+}
