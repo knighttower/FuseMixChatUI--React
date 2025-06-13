@@ -1,32 +1,32 @@
 import { purgeCSSPlugin } from '@fullhuman/postcss-purgecss';
 import autoprefixer from 'autoprefixer';
 import UnoCSS from '@unocss/postcss';
+import cssnano from 'cssnano';
 export default {
     plugins: [
         UnoCSS(),
-        // purgeCSSPlugin({
-        //     content: [
-        //         './layout/*',
-        //         './sections/*',
-        //         './templates/*',
-        //         './snippets/*',
-        //         './resources/js/**/*.js',
-        //         './resources/js/**/*.vue',
-        //     ],
-        //     safelist: {
-        //         standard: ['html', 'body', 'open', '--dark'],
-        //         deep: [],
-        //         greedy: [
-        //             /.*\-\-.*/,
-        //             /^--*/,
-        //             /.*--/,
-        //             /--/,
-        //             /.--/,
-        //             /.*--.*/,
-        //             /(\*?\.)?[a-zA-Z0-9_-]+(\.\-\-[a-zA-Z0-9_-]+)+/,
-        //         ],
-        //     },
-        // }),
+        process.env.NODE_ENV === 'production' &&
+            purgeCSSPlugin({
+                content: ['./src/*'],
+                safelist: {
+                    standard: ['html', 'body'],
+                    deep: [],
+                    greedy: [
+                        //   /.*\-\-.*/,
+                        //   /.*--/,
+                        /^x-*/,
+                        /--/,
+                        /.--/,
+                        /offset-/,
+                        /col-sm/,
+                        /col-lg/,
+                        /col-md/,
+                        /col-xl/,
+                        /col-xxl-/,
+                    ],
+                },
+            }),
+        process.env.NODE_ENV === 'production' && cssnano(),
         autoprefixer,
     ],
 };

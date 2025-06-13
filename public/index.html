@@ -1,30 +1,26 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Websocket Chat Interface</title>
+        <link href="assets/css/x_style.css" rel="preload" as="style" onload="this.rel='stylesheet'" />
+        <noscript>
+            <link href="assets/css/x_style.css" rel="stylesheet" />
+        </noscript>
+    </head>
 
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Chat Interface</title>
-    <link href="assets/css/x_style.css" rel="preload" as="style" onload="this.rel='stylesheet'">
-    <noscript>
-        <link href="assets/css/x_style.css" rel="stylesheet">
-    </noscript>
-</head>
+    <body>
+        <div class="chat--app">
+            <aside>
+                <x-sidebar></x-sidebar>
+            </aside>
 
-<body>
-    <div id="fx--app" class="fx--app">
+            <main>
+                <x-chat></x-chat>
+            </main>
+        </div>
 
-        <aside>
-            <fx-sidebar></fx-sidebar>
-        </aside>
-
-        <main class="main-content">
-            <fx-chat></fx-chat>
-        </main>
-
-    </div>
-
-    <script src="//unpkg.com/vue@3/dist/vue.global.prod.js"></script>
-    <script src="assets/js/x_app.js"></script>
-
+        <script src="assets/js/x_app.js"></script>
+    </body>
 </html>

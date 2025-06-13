@@ -7,7 +7,14 @@ export default defineConfig({
     transformCSS: 'pre',
     // frontend: true,
     content: {
-        filesystem: ['./src/**/*.blade.php', './src/**/*.html', './src/**/*.js', './src/**/*.vue'],
+        filesystem: [
+            './src/**/*.blade.php',
+            './src/**/*.html',
+            './src/**/*.js',
+            './src/**/*.vue',
+            './src/**/*.jsx',
+            './src/**/*.mjs',
+        ],
     },
     // hmrTopLevelAwait: true,
     // fetchMode: 'no-cors',
