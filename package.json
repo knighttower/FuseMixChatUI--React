@@ -6,6 +6,7 @@
     "dev": "webpack --watch --mode=development",
     "do:update": "ncu --interactive",
     "pkg:upgrade": "npm remove knighttower && npm install knighttower",
+    "test:server": "cd test && node --watch server.js",
     "test": "npm run test"
   },
   "dependencies": {
@@ -63,7 +64,8 @@
     "terser-webpack-plugin": "^5.3.14",
     "webpack": "^5.99.9",
     "webpack-cli": "^6.0.1",
-    "webpack-manifest-plugin": "^5.0.1"
+    "webpack-manifest-plugin": "^5.0.1",
+    "ws": "^8.18.2"
   },
   "overrides": {
     "brace-expansion": "2.0.1"

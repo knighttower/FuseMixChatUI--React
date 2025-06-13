@@ -14,8 +14,31 @@ export default function Settings() {
     }, [storedUrl]);
 
     const save = () => {
-        websocketUrl.set(localUrl); // saves to memory + localStorage
-        toast.success('Settings saved successfully!');
+        try {
+            let cleanedUrl = localUrl.trim();
+
+            // Remove ws, wss, ws://, wss://, or // from the beginning
+            cleanedUrl = cleanedUrl.replace(/^(wss?:)?\/\//i, '').replace(/^wss?/i, '');
+
+            // Remove trailing slashes
+            cleanedUrl = cleanedUrl.replace(/\/+$/, '');
+
+            // Optional: remove unsafe characters
+            cleanedUrl = cleanedUrl.replace(/[^\w.-:/]/g, '');
+
+            // Basic validation (host[:port][/path])
+            const isValid = /^[\w.-]+(:\d+)?(\/[\w./-]*)?$/.test(cleanedUrl);
+            if (!isValid) {
+                toast.error('Invalid WebSocket URL');
+                return;
+            }
+
+            setLocalUrl(cleanedUrl);
+            websocketUrl.set(cleanedUrl);
+            toast.success('Settings saved successfully!');
+        } catch (e) {
+            toast.error('Error sanitizing URL');
+        }
     };
 
     return (

@@ -1,6 +1,7 @@
 // PromptMessage.jsx
 import React, { useEffect, useMemo } from 'react';
 import MarkdownIt from 'markdown-it';
+import toast from 'knighttower/toast';
 
 const PromptMessage = ({ message, isUser }) => {
     const md = useMemo(() => new MarkdownIt(), []);
@@ -22,14 +23,15 @@ const PromptMessage = ({ message, isUser }) => {
     };
 
     const addCopyButtons = () => {
-        const codeBlocks = document.querySelectorAll('.prompt-message:not(.--user) > div');
+        const codeBlocks = document.querySelectorAll('.chat__message:not(.--user) .chat__message__content');
         codeBlocks.forEach((block) => {
             const parent = block.parentElement;
             if (!parent.querySelector('.copy-button')) {
                 const button = document.createElement('button');
                 button.innerHTML = 'Copy';
-                button.setAttribute('class', 'copy-button');
+                button.setAttribute('class', 'chat__copy-button');
                 button.addEventListener('click', () => {
+                    toast.success('Copied!');
                     copyToClipboard(block.textContent);
                 });
                 parent.appendChild(button);
@@ -51,8 +53,12 @@ const PromptMessage = ({ message, isUser }) => {
     }, [renderedMessage]);
 
     return (
-        <div className={`prompt-message${isUser ? ' --user' : ''}`}>
-            <div dangerouslySetInnerHTML={{ __html: renderedMessage }} />
+        <div className={`chat__message ${isUser ? '--user' : ''}`}>
+            <div className='chat__message__tag'>
+                <small>{isUser ? '-- user --' : '-- agent --'}</small>
+            </div>
+
+            <div className='chat__message__content' dangerouslySetInnerHTML={{ __html: renderedMessage }} />
         </div>
     );
 };

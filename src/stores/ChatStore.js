@@ -1,64 +1,88 @@
-// https://zustand.docs.pmnd.rs/getting-started/introduction
-import { create } from 'zustand';
-// https://valtio.dev/docs/introduction/getting-started
-import { proxy, snapshot } from 'valtio';
+import { persistentMap } from '@nanostores/persistent';
 
-const state = proxy({
-    connections: {},
-    usage: {},
-});
+export const connections = persistentMap(
+    'chat-connections',
+    {},
+    {
+        encode: JSON.stringify,
+        decode: JSON.parse,
+    },
+);
 
-export const useChatStore = create(() => ({
-    state,
+export const usage = persistentMap(
+    'chat-usage',
+    {},
+    {
+        encode: JSON.stringify,
+        decode: JSON.parse,
+    },
+);
 
-    // Actions
-    addMessage: (socketId, message) => {
-        if (!state.connections[socketId]) {
-            state.connections[socketId] = [];
-        }
-        state.connections[socketId].push(message);
+export const chatStore = {
+    addMessage(socketId, message) {
+        const all = connections.get();
+        const thread = all[socketId] || [];
+        connections.set({
+            ...all,
+            [socketId]: [...thread, message],
+        });
     },
 
-    addUsage: (socketId, usageEntry) => {
-        if (!state.usage[socketId]) {
-            state.usage[socketId] = [];
-        }
-        state.usage[socketId].push(usageEntry);
+    addUsage(socketId, usageData) {
+        const all = usage.get();
+        const record = all[socketId] || [];
+        usage.set({
+            ...all,
+            [socketId]: [...record, usageData],
+        });
     },
 
-    updateMessageById: (socketId, messageId, newMessage) => {
-        const connection = state.connections[socketId];
-        if (!connection) return false;
+    updateMessageById(socketId, messageId, newMessage) {
+        const all = connections.get();
+        const thread = all[socketId];
+        if (!thread) return false;
 
-        const index = connection.findIndex((item) => item.id === messageId);
+        const index = thread.findIndex((msg) => msg.id === messageId);
         if (index === -1) return false;
 
-        connection[index].message = newMessage;
+        const updated = [...thread];
+        updated[index] = { ...updated[index], message: newMessage };
+
+        connections.set({
+            ...all,
+            [socketId]: updated,
+        });
+
         return true;
     },
 
-    clearHistory: (socketId) => {
-        state.connections[socketId] = [];
+    clearHistory(socketId) {
+        const all = connections.get();
+        connections.set({
+            ...all,
+            [socketId]: [],
+        });
     },
 
-    // Getters (non-reactive, use snapshot for pure values)
-    getHistory: (socketId) => {
-        const snap = snapshot(state);
-        return snap.connections[socketId] || [];
+    getHistory(socketId) {
+        const all = connections.get();
+        return all[socketId] ? [...all[socketId]] : [];
     },
 
-    getReadHistory: (socketId) => {
-        const history = useChatStore.getState().getHistory(socketId);
-        return history.map((item) => `${item.user}: ${item.message}`).join('\n');
+    getReadHistory(socketId) {
+        return chatStore
+            .getHistory(socketId)
+            .map((item) => `${item.user}: ${item.message}`)
+            .join('\n');
     },
 
-    getLastMessage: (socketId) => {
-        const history = useChatStore.getState().getHistory(socketId);
-        return history.length ? history[history.length - 1] : null;
+    getLastMessage(socketId) {
+        const thread = chatStore.getHistory(socketId);
+        return thread.length === 0 ? null : thread[thread.length - 1];
     },
 
-    getMessageById: (socketId, messageId) => {
-        const history = useChatStore.getState().getHistory(socketId);
-        return history.find((item) => item.id === messageId) || null;
+    getMessageById(socketId, messageId) {
+        const thread = chatStore.getHistory(socketId);
+        return thread.find((item) => item.id === messageId) || null;
     },
-}));
+};

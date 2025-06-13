@@ -1,16 +1,18 @@
 import React, { useState, useContext } from 'react';
 import { Sidebar as Drawer } from 'primereact/sidebar';
 import eventBus from '@/services/busService';
-// import FxFeed from '@/components/FxFeed';
+import ChatHistory from '@/components/ChatHistory';
 import AppSettings from '@/components/Settings';
+import toast from 'knighttower/toast';
 
 export default function Sidebar() {
     const [showHistory, setShowHistory] = useState(false);
     const [showSettings, setShowSettings] = useState(false);
 
     const newChat = () => {
-        eventBus.emit('new/chat');
+        eventBus.emit('chat/new');
         console.log('New chat started');
+        toast.success('New chat started successfully!');
     };
 
     return (
@@ -66,8 +68,10 @@ export default function Sidebar() {
                 onHide={() => setShowHistory(false)}
                 header='Chat History'
                 position='left'
-                style={{ width: '400px' }}
-            ></Drawer>
+                style={{ width: '50%', minWidth: '300px' }}
+            >
+                <ChatHistory />
+            </Drawer>
 
             <Drawer
                 visible={showSettings}

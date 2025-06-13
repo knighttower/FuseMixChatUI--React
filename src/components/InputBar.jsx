@@ -11,7 +11,7 @@ export default function InputArea() {
     const send = () => {
         setAgentIsWorking(true);
         const content = convertToMarkdown(text);
-        eventBus.emit('sendEditorMsg', content);
+        eventBus.emit('sendUserMsg', content);
     };
 
     useEffect(() => {
@@ -37,7 +37,7 @@ export default function InputArea() {
     };
 
     return (
-        <section className='fx-input-area w-100% pt-1'>
+        <section className='chat__input-area w-100% pt-1'>
             <Editor
                 value={text}
                 onTextChange={(e) => setText(e.htmlValue)}
@@ -46,7 +46,7 @@ export default function InputArea() {
                 modules={modulesOptions}
                 headerTemplate={<></>} // Hides the toolbar
             />
-            <div className='fx-input-area__trigger'>
+            <div className='chat__input-area__trigger'>
                 <Button
                     onClick={send}
                     disabled={agentIsWorking}

@@ -1,9 +1,9 @@
-// Chat.jsx
+// src/components/Chat.jsx
 import React, { useEffect, useState, useRef } from 'react';
-// Stores
 import { useStore } from '@nanostores/react';
+// Stores
 import { websocketUrl } from '@/stores/AppSettings';
-import { useChatStore } from '@/stores/ChatStore';
+import { connections, chatStore } from '@/stores/ChatStore';
 // Services
 import eventBus from '@/services/busService';
 // Components
@@ -14,117 +14,156 @@ import { uuid, typeOf, getDynamicId } from 'knighttower/utility';
 
 export default function Chat() {
     const endpoint = useStore(websocketUrl);
-    console.log('______ websocketUrl ______', endpoint);
-    const { getLastMessage, updateMessageById, addMessage, connections, clearHistory } = useChatStore();
+    const allConnections = useStore(connections);
     const [messages, setMessages] = useState([]);
     const socketRef = useRef(null);
-    const socketIdRef = useRef(uuid()); // Setup websocket and event listeners
+    const socketIdRef = useRef(uuid());
 
-    useEffect(() => {
+    const initSocket = () => {
         if (!endpoint) return;
 
         const socket = new WebSocket(`//${endpoint}`);
+
+        socket.onopen = () => {
+            socketRef.current = socket;
+            console.log('Chat Connected to server');
+            eventBus.emit('websocket/ready');
+        };
+
+        socket.onclose = () => {
+            console.log('Chat Disconnected from server');
+            eventBus.emit('websocket/closed');
+        };
+
+        socket.onerror = (err) => {
+            console.error('Chat WebSocket error:', err);
+            eventBus.emit('websocket/error', err);
+            socket.close();
+            socketIdRef.current = null;
+        };
+
+        socket.onmessage = (event) => {
+            let raw = event.data;
+            let data = raw;
+
+            if (typeof raw === 'string') {
+                try {
+                    data = JSON.parse(raw);
+                } catch (e) {
+                    console.warn('Raw data is plain string, not JSON:', raw);
+                }
+            }
+
+            let response;
+            if (typeof data === 'object' && data !== null) {
+                let possible = data.response ?? data;
+                if (typeof possible === 'object' && possible !== null) {
+                    response = possible.text || possible.response || possible;
+                } else {
+                    response = possible;
+                }
+            } else {
+                response = data;
+            }
+
+            const type = typeOf(response);
+            let finalResponse;
+            switch (type) {
+                case 'string':
+                    finalResponse = response.trim('"');
+                    break;
+                case 'number':
+                case 'boolean':
+                case 'null':
+                case 'undefined':
+                case 'integer':
+                    finalResponse = String(response);
+                    break;
+                default:
+                    try {
+                        finalResponse = JSON.stringify(response);
+                    } catch {
+                        finalResponse = '[Unserializable response]';
+                    }
+            }
+
+            const socketId = socketIdRef.current;
+            const last = chatStore.getLastMessage(socketId);
+
+            if (last?.user === 'assistant') {
+                const combined = [last.message, finalResponse].join('');
+                chatStore.updateMessageById(socketId, last.id, combined);
+            } else {
+                chatStore.addMessage(socketId, {
+                    message: finalResponse,
+                    user: 'assistant',
+                    id: getDynamicId(),
+                });
+            }
+
+            setMessages(chatStore.getHistory(socketId));
+            eventBus.emit('resetEditor');
+            eventBus.emit('agentHasCompleted');
+        };
+
         socketRef.current = socket;
+    };
 
-        // socket.onmessage = (event) => {
-        //     let data = event.data;
-        //     if (data) {
-        //         try {
-        //             data = JSON.parse(data);
-        //         } catch (e) {
-        //             console.error('Failed to parse incoming data:', e);
-        //         }
-        //     }
+    useEffect(() => {
+        if (!endpoint) return;
+        initSocket();
 
-        //     if (data?.response) {
-        //         let response;
-        //         const type = typeOf(data.response);
-        //         switch (type) {
-        //             case 'string':
-        //             case 'null':
-        //             case 'undefined':
-        //             case 'number':
-        //             case 'boolean':
-        //             case 'integer':
-        //                 response = data.response;
-        //                 break;
-        //             default:
-        //                 let resp = data.response.text || data.response.response || data.response;
-        //                 response = typeOf(resp, 'string') ? resp.trim('"') : JSON.stringify(resp);
-        //                 break;
-        //         }
+        // Event listeners
+        eventBus.on('sendUserMsg', (content) => {
+            if (!content || !socketRef.current) return;
 
-        //         const socketId = socketIdRef.current;
-        //         const last = getLastMessage(socketId);
+            const socketId = socketIdRef.current;
+            const msg = {
+                message: content,
+                user: 'user',
+                id: getDynamicId(),
+            };
 
-        //         if (last?.user === 'assistant') {
-        //             const combined = [last.message, response].join('');
-        //             updateMessageById(socketId, last.id, combined);
-        //         } else {
-        //             addMessage(socketId, {
-        //                 message: response,
-        //                 user: 'assistant',
-        //                 id: getDynamicId(),
-        //             });
-        //         }
+            chatStore.addMessage(socketId, msg);
+            setMessages(chatStore.getHistory(socketId));
+            socketRef.current.send(content);
+        });
 
-        //         setMessages([...connections[socketId]]);
-        //         eventBus.emit('resetEditor');
-        //         eventBus.emit('agentHasCompleted');
-        //     }
-        // };
+        eventBus.on('resetBot', (command) => {
+            const socketId = socketIdRef.current;
+            if (command === 'all' || command === socketId) {
+                chatStore.clearHistory(socketId);
+                setMessages(chatStore.getHistory(socketId));
+            }
+        });
 
-        // socket.onopen = () => {
-        //     console.log('Chat Connected to server');
-        //     eventBus.emit('prompt-websocket/ready');
-        // };
+        eventBus.on('chat/new', () => {
+            if (socketRef.current) {
+                socketRef.current.close();
+                socketRef.current = null;
+            }
 
-        // socket.onclose = () => {
-        //     console.log('Chat Disconnected from server');
-        //     eventBus.emit('prompt-window/close');
-        // };
+            const newSocketId = uuid();
+            socketIdRef.current = newSocketId;
 
-        // socket.onerror = (err) => {
-        //     console.error('Chat WebSocket error:', err);
+            chatStore.clearHistory(newSocketId);
+            setMessages([]);
 
-        //     eventBus.emit('prompt-window/close');
+            console.log('New chat session started with ID:', newSocketId);
 
-        //     socket.close();
-        // }; // Listen to message send and reset commands
+            initSocket();
+        });
 
-        // eventBus.on('sendEditorMsg', (content) => {
-        //     if (!content || !socketRef.current) return;
+        const socketId = socketIdRef.current;
+        if (allConnections[socketId]) {
+            setMessages([...allConnections[socketId]]);
+        }
 
-        //     const socketId = socketIdRef.current;
-        //     const msg = {
-        //         message: content,
-        //         user: 'user',
-        //         id: getDynamicId(),
-        //     };
-
-        //     addMessage(socketId, msg);
-        //     setMessages([...connections[socketId]]);
-        //     socketRef.current.send(content);
-        // });
-
-        // eventBus.on('resetBot', (command) => {
-        //     const socketId = socketIdRef.current;
-        //     if (command === 'all' || command === socketId) {
-        //         clearHistory(socketId);
-        //         setMessages([...connections[socketId]]);
-        //     }
-        // }); // Initial message sync
-
-        // const socketId = socketIdRef.current;
-        // if (connections[socketId]) {
-        //     setMessages([...connections[socketId]]);
-        // }
-
-        // return () => {
-        //     socketRef.current?.close();
-        //     eventBus.off('sendEditorMsg');
-        //     eventBus.emit('prompt-window/close');
-        // };
+        return () => {
+            socketRef.current?.close();
+            eventBus.off('sendUserMsg');
+            eventBus.emit('websocket/closed');
+        };
     }, [endpoint]);
 
     if (!endpoint) {
@@ -138,9 +177,13 @@ export default function Chat() {
                     <Message key={index} message={msg.message} isUser={msg.user === 'user'} />
                 ))}
             </div>
-            <div className='chat__inputs'>
-                <InputBar />
-            </div>
+            {socketRef.current ? (
+                <div className='chat__inputs'>
+                    <InputBar />
+                </div>
+            ) : (
+                <h3 className='chat__disconnected'>Waiting for server connection...</h3>
+            )}
         </div>
     );
 }
