@@ -102,8 +102,8 @@ export default function Chat() {
             }
 
             setMessages(chatStore.getHistory(socketId));
-            eventBus.emit('resetEditor');
-            eventBus.emit('agentHasCompleted');
+            eventBus.emit('chat/resetEditor');
+            eventBus.emit('chat/agentHasCompleted');
         };
 
         socketRef.current = socket;
@@ -114,7 +114,7 @@ export default function Chat() {
         initSocket();
 
         // Event listeners
-        eventBus.on('sendUserMsg', (content) => {
+        eventBus.on('chat/send/userMsg', (content) => {
             if (!content || !socketRef.current) return;
 
             const socketId = socketIdRef.current;
@@ -129,9 +129,17 @@ export default function Chat() {
             socketRef.current.send(content);
         });
 
-        eventBus.on('resetBot', (command) => {
+        eventBus.on('chat/history/clear', (command) => {
             const socketId = socketIdRef.current;
-            if (command === 'all' || command === socketId) {
+            console.log('______ command ______', command);
+            if (command === 'all') {
+                chatStore.clearHistoryAll();
+                setMessages([]);
+                eventBus.emit('chat/resetEditor');
+                eventBus.emit('chat/agentHasCompleted');
+                eventBus.emit('chat/new');
+            }
+            if (command === socketId) {
                 chatStore.clearHistory(socketId);
                 setMessages(chatStore.getHistory(socketId));
             }
@@ -161,7 +169,7 @@ export default function Chat() {
 
         return () => {
             socketRef.current?.close();
-            eventBus.off('sendUserMsg');
+            eventBus.off('chat/send/userMsg');
             eventBus.emit('websocket/closed');
         };
     }, [endpoint]);

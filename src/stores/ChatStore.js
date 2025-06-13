@@ -63,6 +63,12 @@ export const chatStore = {
             [socketId]: [],
         });
     },
+    clearHistoryAll() {
+        connections.set({});
+        usage.set({});
+        localStorage.removeItem('chat-connections');
+        localStorage.removeItem('chat-usage');
+    },
 
     getHistory(socketId) {
         const all = connections.get();

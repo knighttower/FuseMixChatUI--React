@@ -11,19 +11,20 @@ export default function InputArea() {
     const send = () => {
         setAgentIsWorking(true);
         const content = convertToMarkdown(text);
-        eventBus.emit('sendUserMsg', content);
+        eventBus.emit('chat/send/userMsg', content);
     };
 
     useEffect(() => {
         const resetEditor = () => setText('');
         const onAgentComplete = () => setAgentIsWorking(false);
-
-        eventBus.on('resetEditor', resetEditor);
-        eventBus.on('agentHasCompleted', onAgentComplete);
+        eventBus.on('chat/new', resetEditor);
+        eventBus.on('chat/resetEditor', resetEditor);
+        eventBus.on('chat/agentHasCompleted', onAgentComplete);
 
         return () => {
-            eventBus.off('resetEditor', resetEditor);
-            eventBus.off('agentHasCompleted', onAgentComplete);
+            eventBus.off('chat/resetEditor', resetEditor);
+            eventBus.off('chat/agentHasCompleted', onAgentComplete);
+            eventBus.off('chat/new', resetEditor);
         };
     }, []);
 
