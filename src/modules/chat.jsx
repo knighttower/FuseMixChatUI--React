@@ -131,18 +131,20 @@ export default function Chat() {
 
         eventBus.on('chat/history/clear', (command) => {
             const socketId = socketIdRef.current;
-            console.log('______ command ______', command);
+
             if (command === 'all') {
                 chatStore.clearHistoryAll();
                 setMessages([]);
-                eventBus.emit('chat/resetEditor');
-                eventBus.emit('chat/agentHasCompleted');
+
                 eventBus.emit('chat/new');
             }
             if (command === socketId) {
                 chatStore.clearHistory(socketId);
                 setMessages(chatStore.getHistory(socketId));
             }
+
+            eventBus.emit('chat/resetEditor');
+            eventBus.emit('chat/agentHasCompleted');
         });
 
         eventBus.on('chat/new', () => {

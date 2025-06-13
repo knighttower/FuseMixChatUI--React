@@ -2,11 +2,13 @@ import React from 'react';
 import { useStore } from '@nanostores/react';
 import { connections } from '@/stores/ChatStore';
 import eventBus from '@/services/busService';
+import toast from 'knighttower/toast';
 
 export default function ChatHistory() {
     const allConnections = useStore(connections);
     const clear = () => {
         eventBus.emit('chat/history/clear', 'all');
+        toast.success('Chat history cleared successfully!');
     };
     return (
         <>
