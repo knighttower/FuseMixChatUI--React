@@ -68,7 +68,8 @@ export default function Sidebar() {
                 onHide={() => setShowHistory(false)}
                 header='Chat History'
                 position='left'
-                style={{ width: '50%', minWidth: '300px' }}
+                className='chat__history'
+                style={{ width: '70%', minWidth: '300px' }}
             >
                 <ChatHistory />
             </Drawer>
@@ -78,6 +79,7 @@ export default function Sidebar() {
                 onHide={() => setShowSettings(false)}
                 header='Settings'
                 position='left'
+                className='chat__settings'
                 style={{ width: '400px' }}
             >
                 <AppSettings />

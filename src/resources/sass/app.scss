@@ -17,7 +17,7 @@ body {
     color: #868686;
 }
 
-.fx--app {
+.chat--app {
     display: flex;
     height: 100dvh;
     width: 100%;
@@ -34,8 +34,7 @@ main {
 // --------------------------
 .sidebar {
     .logo {
-        color: #c7c7c7;
-        fill: #c7c7c7;
+        fill: #4e4e4e;
     }
     &__menu {
         height: 100%;
@@ -52,10 +51,11 @@ main {
     }
     &__action {
         width: 80px;
-        height: 30px;
-        line-height: 30px;
+        height: 25px;
+        line-height: 25px;
         text-align: center;
         color: #858585;
+        text-decoration: none;
     }
 }
 
@@ -77,6 +77,24 @@ main {
         width: 100%;
         padding: 15px;
         border-top: 1px solid #333;
+    }
+
+    &__history {
+        background-color: #202020;
+        color: #999999;
+        &__entry {
+            hr {
+                border: 0;
+                border-top: 1px dashed #333;
+                margin: 10px 0;
+                margin-top: 30px;
+                max-width: 30%;
+            }
+        }
+    }
+    &__settings {
+        background-color: #202020;
+        color: #999999;
     }
 }
 

@@ -3,7 +3,7 @@
     <head>
         <meta charset="UTF-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-        <title>Chat Interface</title>
+        <title>Websocket Chat Interface</title>
         <link href="assets/css/x_style.css" rel="preload" as="style" onload="this.rel='stylesheet'" />
         <noscript>
             <link href="assets/css/x_style.css" rel="stylesheet" />
@@ -11,17 +11,16 @@
     </head>
 
     <body>
-        <div class="fx--app">
+        <div class="chat--app">
             <aside>
-                <fx-sidebar></fx-sidebar>
+                <x-sidebar></x-sidebar>
             </aside>
 
             <main>
-                <fx-chat></fx-chat>
+                <x-chat></x-chat>
             </main>
         </div>
 
-        <script src="//unpkg.com/vue@3/dist/vue.global.prod.js"></script>
         <script src="assets/js/x_app.js"></script>
     </body>
 </html>

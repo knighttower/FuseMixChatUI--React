@@ -17,10 +17,10 @@ export default function ChatHistory() {
                     Clear History
                 </button>
             </div>
-            <div className='chat-history space-y-4'>
+            <div className=' space-y-4'>
                 {Object.entries(allConnections).map(([socketId, thread]) => (
-                    <div key={socketId} className='chat-thread p-4 border rounded-lg'>
-                        <h3 className='font-bold mb-2 color-purple'>Chat ID: {socketId}</h3>
+                    <div key={socketId} className='chat__history__entry p-4 border rounded-lg'>
+                        <h4 className='font-bold mb-2 color-purple'>Chat ID: {socketId}</h4>
                         {thread.length === 0 ? (
                             <p className='text-gray-500'>No messages</p>
                         ) : (
@@ -32,6 +32,7 @@ export default function ChatHistory() {
                                 ))}
                             </ul>
                         )}
+                        <hr />
                     </div>
                 ))}
             </div>

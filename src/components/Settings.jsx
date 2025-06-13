@@ -42,16 +42,20 @@ export default function Settings() {
     };
 
     return (
-        <section>
+        <section className='p-4'>
+            <label htmlFor='websocketUrl' className='pb-2 block'>
+                Enter the "ws/wss" URL for the endpoint:
+            </label>
             <input
                 type='text'
+                name='websocketUrl'
                 value={localUrl}
                 onChange={(e) => setLocalUrl(e.target.value)}
                 placeholder='Websocket URL...'
                 className='w-full p-2 border rounded mb-4'
             />
 
-            <button className='p-button p-component p-button-outlined w-full' onClick={save}>
+            <button className='p-button p-component p-button-outlined w-150px text-align-center block' onClick={save}>
                 Save Settings
             </button>
         </section>
