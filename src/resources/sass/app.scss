@@ -96,61 +96,90 @@ main {
         background-color: #202020;
         color: #999999;
     }
-}
 
-.chat__input-area {
-    .ql-editor {
-        color: #c0c0c0;
-    }
-    &__trigger {
-        display: flex;
-        align-items: right;
-        justify-content: right;
-        padding-top: 10px;
-    }
-}
-
-.chat__message {
-    $this: &;
-    position: relative;
-    & + & {
-        margin-top: 20px;
-    }
-    &__content {
-        color: #d2d2d2;
-        font-size: 14px;
-        line-height: 1.5;
-        background-color: #373737;
-        padding: 10px;
-    }
-    &__tag {
-        color: #03762f;
-    }
-    &.--user {
-        #{$this}__content {
-            color: #8c8c8c;
-            background-color: #202020;
+    &__messages {
+        overflow-y: auto;
+        height: 100%;
+        max-height: calc(100dvh - 300px);
+        &::-webkit-scrollbar {
+            width: 30px;
         }
-        #{$this}__tag {
-            color: #035d76;
+        &::-webkit-scrollbar-thumb {
+            background-color: #444;
+            border-radius: 4px;
+        }
+        &::-webkit-scrollbar-track {
+            background-color: #333;
+        }
+        &::-webkit-scrollbar-corner {
+            background-color: #333;
+        }
+
+        /* Firefox scrollbar support */
+        scrollbar-width: 30px;
+        scrollbar-color: #444 #333;
+
+        /* Edge and modern browsers */
+        & {
+            scrollbar-width: 30px;
+            scrollbar-color: #444 #333;
         }
     }
-}
 
-.chat__copy-button {
-    position: absolute;
-    bottom: -20px;
-    right: 10px;
-    width: 50px;
-    height: 30px;
-    line-height: 30px;
-    text-align: center;
-    color: #c4c4c4;
-    background-color: #444;
-    border: #686868 1px solid;
+    &__input-area {
+        .ql-editor {
+            color: #c0c0c0;
+        }
+        &__trigger {
+            display: flex;
+            align-items: right;
+            justify-content: right;
+            padding-top: 10px;
+        }
+    }
 
-    cursor: pointer;
-    &:hover {
-        background-color: #555;
+    &__message {
+        $this: &;
+        position: relative;
+        & + & {
+            margin-top: 20px;
+        }
+        &__content {
+            color: #d2d2d2;
+            font-size: 14px;
+            line-height: 1.5;
+            background-color: #373737;
+            padding: 10px;
+        }
+        &__tag {
+            color: #03762f;
+        }
+        &.--user {
+            #{$this}__content {
+                color: #8c8c8c;
+                background-color: #202020;
+            }
+            #{$this}__tag {
+                color: #035d76;
+            }
+        }
+    }
+
+    &__copy-button {
+        position: absolute;
+        bottom: -20px;
+        right: 10px;
+        width: 50px;
+        height: 30px;
+        line-height: 30px;
+        text-align: center;
+        color: #c4c4c4;
+        background-color: #444;
+        border: #686868 1px solid;
+
+        cursor: pointer;
+        &:hover {
+            background-color: #555;
+        }
     }
 }

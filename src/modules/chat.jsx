@@ -22,13 +22,8 @@ export default function Chat() {
     const [messages, setMessages] = useState([]);
     const socketRef = useRef(null);
     const socketIdRef = useRef(createId());
+    const messagesEndRef = useRef(null);
 
-    /**
-     * Handles sending a user message to the WebSocket server.
-     * @private
-     * @param {string} content - The message content to send.
-     * @return {void}
-     */
     const handleUserMsg = (content) => {
         if (!content || !socketRef.current) return;
 
@@ -39,12 +34,6 @@ export default function Chat() {
         socketRef.current.send(content);
     };
 
-    /**
-     * Handles clearing the chat history.
-     * @private
-     * @param {string} command - The command to clear history ('all' or specific socket ID).
-     * @return {void}
-     */
     const handleHistoryClear = (command) => {
         const socketId = socketIdRef.current;
 
@@ -62,11 +51,6 @@ export default function Chat() {
         eventBus.emit('chat/agentHasCompleted');
     };
 
-    /**
-     * Handles starting a new chat session.
-     * @private
-     * @return {void}
-     */
     const handleNewChat = () => {
         const sock = socketRef.current;
         if (sock) {
@@ -84,11 +68,6 @@ export default function Chat() {
         initSocket();
     };
 
-    /**
-     * Initializes the WebSocket connection.
-     * @private
-     * @return {void}
-     */
     const initSocket = () => {
         if (!endpoint) return;
 
@@ -176,7 +155,6 @@ export default function Chat() {
         socketRef.current = socket;
     };
 
-    // Effect: setup on mount & cleanup on unmount or endpoint change
     useEffect(() => {
         if (!endpoint) return;
 
@@ -205,20 +183,27 @@ export default function Chat() {
 
             eventBus.emit('websocket/closed');
         };
-    }, [endpoint]);
+    }, [endpoint]); // Scroll to bottom on message update
 
-    // Render
+    useEffect(() => {
+        if (messagesEndRef.current) {
+            messagesEndRef.current.scrollIntoView({ behavior: 'smooth' });
+        }
+    }, [messages]);
+
     if (!endpoint) {
         return <div className='chat-window'>Missing WebSocket URL in settings.</div>;
     }
 
     return (
         <div className='chat__window'>
-            <div className='chat__messages max-h100 overscroll-x-auto pb-5'>
+            <div className='chat__messages max-h100 pb-5'>
                 {messages.map((msg, i) => (
                     <Message key={i} message={msg.message} isUser={msg.user === 'user'} />
                 ))}
+                <div ref={messagesEndRef} />
             </div>
+
             {socketRef.current ? (
                 <div className='chat__inputs'>
                     <InputBar />

@@ -4,6 +4,7 @@
   "type": "module",
   "scripts": {
     "dev": "webpack --watch --mode=development",
+    "build": "webpack --mode=production",
     "do:update": "ncu --interactive",
     "pkg:upgrade": "npm remove knighttower && npm install knighttower",
     "test:server": "cd test && node --watch server.js",
