@@ -1,4 +1,6 @@
 @forward './icons';
+@import 'primereact/resources/themes/nano/theme.css';
+@import 'knighttower/toast/src/style.css';
 /*! purgecss start ignore */
 @unocss;
 /*! purgecss end ignore */
@@ -11,12 +13,13 @@ body {
     height: 100%;
     margin: 0;
     padding: 0;
-    background-color: #1c1b22;
+    background-color: #1a1a1a;
+    color: #868686;
 }
 
 .fx--app {
     display: flex;
-    height: 100%;
+    height: 100dvh;
     width: 100%;
 }
 
@@ -24,10 +27,11 @@ main {
     flex: 1;
     overflow: auto;
     background-color: #1c1b22;
-    color: #fff;
-    padding: 20px;
 }
 
+// =========================================
+// --> Sidebar
+// --------------------------
 .sidebar {
     .logo {
         color: #fff;
@@ -35,7 +39,7 @@ main {
     }
     &__menu {
         height: 100%;
-        padding: 10px 0;
+        padding: 10px 5px;
         li:not(:first-child) {
             padding: 5px 10px;
         }
@@ -52,5 +56,38 @@ main {
         line-height: 30px;
         text-align: center;
         color: #fff;
+    }
+}
+
+// =========================================
+// --> Chat area
+// --------------------------
+.chat {
+    &__window {
+        width: 100%;
+        height: 100%;
+        background-color: #252525;
+        padding: 20px;
+        position: relative;
+    }
+    &__inputs {
+        position: absolute;
+        bottom: 30px;
+        left: 0;
+        width: 100%;
+        padding: 15px;
+        border-top: 1px solid #333;
+    }
+}
+
+.fx-input-area {
+    .ql-editor {
+        color: #c0c0c0;
+    }
+    &__trigger {
+        display: flex;
+        align-items: right;
+        justify-content: right;
+        padding-top: 10px;
     }
 }
