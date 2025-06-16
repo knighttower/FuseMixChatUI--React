@@ -43,6 +43,15 @@ module.exports = (env, argv) => {
         optimization: {
             usedExports: true,
             minimize: isProduction,
+            splitChunks: {
+                cacheGroups: {
+                    vendors: {
+                        test: /[\\/]node_modules[\\/]/,
+                        name: 'vendors',
+                        chunks: 'all',
+                    },
+                },
+            },
             minimizer: [
                 new TerserPlugin({
                     parallel: true,
@@ -143,7 +152,7 @@ module.exports = (env, argv) => {
                 ],
             },
             entry: {
-                x_style: ['./src/resources/sass/app.scss'],
+                style: ['./src/resources/sass/app.scss'],
             },
 
             output: {
@@ -162,7 +171,7 @@ module.exports = (env, argv) => {
             ...jsLibConfig,
             plugins: [],
             entry: {
-                x_app: ['./src/app.jsx'],
+                app: ['./src/app.jsx'],
             },
 
             output: {
