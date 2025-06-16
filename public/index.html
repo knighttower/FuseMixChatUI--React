@@ -2,14 +2,10 @@
 <html lang="en">
     <head>
         <meta charset="UTF-8" />
+        <title>FuseMix Chat</title>
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-        <title>Websocket Chat Interface</title>
-        <link href="assets/css/x_style.css" rel="preload" as="style" onload="this.rel='stylesheet'" />
-        <noscript>
-            <link href="assets/css/x_style.css" rel="stylesheet" />
-        </noscript>
+        <link rel="stylesheet" href="assets/css/style.css" />
     </head>
-
     <body>
         <div class="chat--app">
             <aside>
@@ -21,6 +17,8 @@
             </main>
         </div>
 
-        <script src="assets/js/x_app.js"></script>
+        <!-- Scripts -->
+        <script src="assets/js/vendors.js"></script>
+        <script type="module" src="assets/js/app.js"></script>
     </body>
 </html>
