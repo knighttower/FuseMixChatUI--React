@@ -21,6 +21,7 @@ export default function Chat() {
     const allConnections = useStore(connections);
     const [messages, setMessages] = useState([]);
     const socketRef = useRef(null);
+    const [isConnected, setIsConnected] = useState(false);
     const socketIdRef = useRef(createId());
     const messagesEndRef = useRef(null);
 
@@ -74,6 +75,7 @@ export default function Chat() {
         const socket = new WebSocket(`//${endpoint}`);
 
         socket.onopen = () => {
+            setIsConnected(true);
             socketRef.current = socket;
             console.log('Chat Connected to server');
             eventBus.emit('websocket/ready');
@@ -142,17 +144,17 @@ export default function Chat() {
         };
 
         socket.onerror = (err) => {
+            setIsConnected(false);
             console.error('Chat WebSocket error:', err);
             eventBus.emit('websocket/error', err);
             socket.close();
         };
 
         socket.onclose = () => {
+            setIsConnected(false);
             console.log('Chat Disconnected from server');
             eventBus.emit('websocket/closed');
         };
-
-        socketRef.current = socket;
     };
 
     useEffect(() => {
@@ -204,7 +206,7 @@ export default function Chat() {
                 <div ref={messagesEndRef} />
             </div>
 
-            {socketRef.current ? (
+            {isConnected ? (
                 <div className='chat__inputs'>
                     <InputBar />
                 </div>
