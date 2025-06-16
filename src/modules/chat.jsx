@@ -72,7 +72,7 @@ export default function Chat() {
     const initSocket = () => {
         if (!endpoint) return;
 
-        const socket = new WebSocket(`//${endpoint}`);
+        const socket = new WebSocket(endpoint);
 
         socket.onopen = () => {
             setIsConnected(true);

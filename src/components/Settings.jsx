@@ -5,54 +5,68 @@ import { websocketUrl } from '@/stores/AppSettings';
 import toast from 'knighttower/toast';
 
 export default function Settings() {
-    const storedUrl = useStore(websocketUrl); // reactive store value
-    const [localUrl, setLocalUrl] = useState(''); // input field buffer
+    const storedUrl = useStore(websocketUrl);
+    const [localUrl, setLocalUrl] = useState('');
 
-    // Sync from store into local state on mount or update
     useEffect(() => {
         setLocalUrl(storedUrl);
     }, [storedUrl]);
 
     const save = () => {
         try {
-            let cleanedUrl = localUrl.trim();
+            let input = localUrl.trim();
 
-            // Remove ws, wss, ws://, wss://, or // from the beginning
-            cleanedUrl = cleanedUrl.replace(/^(wss?:)?\/\//i, '').replace(/^wss?/i, '');
+            // If protocol is missing, assume ws:// by default
+            if (!/^wss?:\/\//i.test(input)) {
+                input = 'ws://' + input;
+            }
 
-            // Remove trailing slashes
-            cleanedUrl = cleanedUrl.replace(/\/+$/, '');
+            // Extract the protocol and the rest
+            const match = input.match(/^(wss?):\/\/(.+)$/i);
+            if (!match || !match[1] || !match[2]) {
+                toast.error('Invalid WebSocket URL format');
+                return;
+            }
 
-            // Optional: remove unsafe characters
-            cleanedUrl = cleanedUrl.replace(/[^\w.-:/]/g, '');
+            const protocol = match[1].toLowerCase();
+            let hostAndPath = match[2]
+                .replace(/\/+$/, '') // Remove trailing slashes
+                .replace(/[^\w.-:/]/g, ''); // Sanitize
 
-            // Basic validation (host[:port][/path])
-            const isValid = /^[\w.-]+(:\d+)?(\/[\w./-]*)?$/.test(cleanedUrl);
+            const finalUrl = `${protocol}://${hostAndPath}`;
+
+            // Validate final structure
+            const isValid = /^wss?:\/\/[\w.-]+(:\d+)?(\/[\w./-]*)?$/i.test(finalUrl);
             if (!isValid) {
                 toast.error('Invalid WebSocket URL');
                 return;
             }
 
-            setLocalUrl(cleanedUrl);
-            websocketUrl.set(cleanedUrl);
+            setLocalUrl(finalUrl);
+            websocketUrl.set(finalUrl);
             toast.success('Settings saved successfully!');
         } catch (e) {
-            toast.error('Error sanitizing URL');
+            console.error(e);
+            toast.error('Error processing URL');
         }
     };
 
     return (
         <section className='p-4'>
             <label htmlFor='websocketUrl' className='pb-2 block'>
-                Enter the "ws/wss" URL for the endpoint:
+                Enter WebSocket URL (<code>ws://</code> or <code>wss://</code>):
             </label>
             <input
                 type='text'
                 name='websocketUrl'
                 value={localUrl}
                 onChange={(e) => setLocalUrl(e.target.value)}
-                placeholder='Websocket URL...'
+                placeholder='ws://example.com/socket'
                 className='w-full p-2 border rounded mb-4'
+                //prettier-ignore
+                pattern="^(ws|wss):\\/\\/.+$"
+                title='Enter a valid WebSocket URL (ws:// or wss://)'
+                required
             />
 
             <button className='p-button p-component p-button-outlined w-150px text-align-center block' onClick={save}>
