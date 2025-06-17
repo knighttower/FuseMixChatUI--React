@@ -33,8 +33,9 @@ main {
 // --> Sidebar
 // --------------------------
 .sidebar {
-    .logo {
-        fill: #4e4e4e;
+    .logo * {
+        color: #4e4e4e;
+        fill: #4e4e4e !important;
     }
     &__menu {
         height: 100%;
@@ -70,14 +71,6 @@ main {
         padding: 20px;
         position: relative;
     }
-    &__inputs {
-        position: absolute;
-        bottom: 30px;
-        left: 0;
-        width: 100%;
-        padding: 15px;
-        border-top: 1px solid #333;
-    }
 
     &__history {
         background-color: #202020;
@@ -95,6 +88,36 @@ main {
     &__settings {
         background-color: #202020;
         color: #999999;
+    }
+
+    &__inputs {
+        position: absolute;
+        bottom: 30px;
+        left: 0;
+        width: 100%;
+        padding: 15px;
+        padding-top: 3px;
+        border-top: 1px solid #333;
+        background-color: #252525;
+    }
+
+    &__input-area {
+        .ql-editor {
+            color: #c0c0c0;
+        }
+        &__trigger,
+        &__expand {
+            display: flex;
+            align-items: right;
+            justify-content: right;
+            padding-top: 10px;
+        }
+
+        &__expand {
+            color: #c0c0c0;
+            fill: #c0c0c0;
+            padding-top: 0;
+        }
     }
 
     &__messages {
@@ -123,18 +146,6 @@ main {
         & {
             scrollbar-width: 30px;
             scrollbar-color: #444 #333;
-        }
-    }
-
-    &__input-area {
-        .ql-editor {
-            color: #c0c0c0;
-        }
-        &__trigger {
-            display: flex;
-            align-items: right;
-            justify-content: right;
-            padding-top: 10px;
         }
     }
 

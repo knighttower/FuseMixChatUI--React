@@ -27,12 +27,17 @@ export default function Chat() {
 
     const handleUserMsg = (content) => {
         if (!content || !socketRef.current) return;
-
         const socketId = socketIdRef.current;
         const msg = { message: content, user: 'user', id: getDynamicId() };
         chatStore.addMessage(socketId, msg);
         setMessages(chatStore.getHistory(socketId));
-        socketRef.current.send(content);
+
+        try {
+            socketRef.current.send(content);
+        } catch (err) {
+            console.error('Failed to send message:', err);
+            toast.error('Failed to send message. Please try again.');
+        }
     };
 
     const handleHistoryClear = (command) => {
