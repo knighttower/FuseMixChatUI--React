@@ -9,8 +9,8 @@ import Sidebar from '@/components/Sidebar';
 import Chat from '@/modules/chat';
 
 const componentMap = {
-    'x-chat': Chat,
-    'x-sidebar': Sidebar,
+    'chat-ui': Chat,
+    'chat-sidebar': Sidebar,
 };
 Object.entries(componentMap).forEach(([tag, Component]) => {
     const nodes = document.querySelectorAll(tag);
